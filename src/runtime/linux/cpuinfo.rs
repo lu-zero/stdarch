@@ -214,4 +214,37 @@ CPU revision	: 1";
         assert!(cpuinfo.field("Features").has("neon"));
         assert!(cpuinfo.field("Features").has("asimd"));
     }
+
+    const POWER8E_POWERKVM: &str = r"processor       : 0
+cpu             : POWER8E (raw), altivec supported
+clock           : 3425.000000MHz
+revision        : 2.1 (pvr 004b 0201)
+
+processor       : 1
+cpu             : POWER8E (raw), altivec supported
+clock           : 3425.000000MHz
+revision        : 2.1 (pvr 004b 0201)
+
+processor       : 2
+cpu             : POWER8E (raw), altivec supported
+clock           : 3425.000000MHz
+revision        : 2.1 (pvr 004b 0201)
+
+processor       : 3
+cpu             : POWER8E (raw), altivec supported
+clock           : 3425.000000MHz
+revision        : 2.1 (pvr 004b 0201)
+
+timebase        : 512000000
+platform        : pSeries
+model           : IBM pSeries (emulated by qemu)
+machine         : CHRP IBM pSeries (emulated by qemu)";
+
+    #[test]
+    fn test_cpuinfo_linux_power8_powerkvm() {
+        let cpuinfo = CpuInfo::from_str(POWER8E_POWERKVM).unwrap();
+        assert_eq!(cpuinfo.field("cpu"), "POWER8E (raw), altivec supported");
+
+        assert!(cpuinfo.field("cpu").has("altivec"));
+    }
 }
