@@ -47,7 +47,9 @@ pub fn detect_features<T: linux::FeatureQuery>(mut x: T) -> usize {
 
 /// Probe the ELF Auxiliary vector for hardware capabilities
 ///
-/// The values are part of the platform-specific `asm/hwcap.h`
+/// The values are part of the platform-specific [`asm/hwcap.h`][hwcap_link].
+///
+/// [hwcap_link]: https://github.com/torvalds/linux/blob/master/arch/arm64/include/uapi/asm/hwcap.h
 impl linux::FeatureQuery for linux::AuxVec {
     fn has_feature(&mut self, x: &__Feature) -> bool {
         use self::__Feature::*;
