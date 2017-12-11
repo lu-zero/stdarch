@@ -69,7 +69,8 @@ impl linux::FeatureQuery for linux::AuxVec {
 
 /// Check for altivec support only
 ///
-/// The powerpc cpuinfo lacks a proper Features field with enough information
+/// PowerPC's /proc/cpuinfo lacks a proper Feature field,
+/// but `altivec` support is indicated in the `cpu` field.
 impl linux::FeatureQuery for linux::CpuInfo {
     fn has_feature(&mut self, x: &__Feature) -> bool {
         use self::__Feature::*;

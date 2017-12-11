@@ -26,8 +26,9 @@ fn detect_features_impl<T: FeatureQuery>(x: T) -> usize {
     }
 }
 
-/// Detects ARM features:
+/// Detects CPU features on Linux.
 pub fn detect_features() -> usize {
+    // FIXME: use libc::getauxval if possible
     // Try to read /proc/self/auxv
     if let Ok(v) = auxvec::AuxVec::new() {
         return detect_features_impl(v);

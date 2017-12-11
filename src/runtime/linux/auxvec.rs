@@ -33,7 +33,6 @@ pub enum AT {
 
 impl AuxVec {
     /// Reads /proc/self/auxv into AuxVec.
-    // TODO: make it less ugly if possible
     pub fn new() -> Result<Self, ::std::io::Error> {
         use std::io::Read;
         let mut file = ::std::fs::File::open("/proc/self/auxv")?;

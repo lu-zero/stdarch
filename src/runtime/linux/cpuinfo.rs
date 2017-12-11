@@ -247,4 +247,56 @@ machine         : CHRP IBM pSeries (emulated by qemu)";
 
         assert!(cpuinfo.field("cpu").has("altivec"));
     }
+
+    const POWER5P: &str = r"processor       : 0
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+processor       : 1
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+processor       : 2
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+processor       : 3
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+processor       : 4
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+processor       : 5
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+processor       : 6
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+processor       : 7
+cpu             : POWER5+ (gs)
+clock           : 1900.098000MHz
+revision        : 2.1 (pvr 003b 0201)
+
+timebase        : 237331000
+platform        : pSeries
+machine         : CHRP IBM,9133-55A";
+
+    #[test]
+    fn test_cpuinfo_linux_power5p() {
+        let cpuinfo = CpuInfo::from_str(POWER5P).unwrap();
+        assert_eq!(cpuinfo.field("cpu"), "POWER5+ (gs)");
+
+        assert!(!cpuinfo.field("cpu").has("altivec"));
+    }
 }
