@@ -133,10 +133,44 @@ extern "C" {
     fn vmulouh(a: vector_unsigned_short, b: vector_unsigned_short) -> vector_unsigned_int;
     #[link_name = "llvm.ppc.altivec.vmulosh"]
     fn vmulosh(a: vector_signed_short, b: vector_signed_short) -> vector_signed_int;
+
+    #[link_name = "llvm.ppc.altivec.vmaxsb"]
+    fn vmaxsb(a: vector_signed_char, b: vector_signed_char) -> vector_signed_char;
+    #[link_name = "llvm.ppc.altivec.vmaxsh"]
+    fn vmaxsh(a: vector_signed_short, b: vector_signed_short) -> vector_signed_short;
+    #[link_name = "llvm.ppc.altivec.vmaxsw"]
+    fn vmaxsw(a: vector_signed_int, b: vector_signed_int) -> vector_signed_int;
+
+    #[link_name = "llvm.ppc.altivec.vmaxub"]
+    fn vmaxub(a: vector_unsigned_char, b: vector_unsigned_char) -> vector_unsigned_char;
+    #[link_name = "llvm.ppc.altivec.vmaxuh"]
+    fn vmaxuh(a: vector_unsigned_short, b: vector_unsigned_short) -> vector_unsigned_short;
+    #[link_name = "llvm.ppc.altivec.vmaxuw"]
+    fn vmaxuw(a: vector_unsigned_int, b: vector_unsigned_int) -> vector_unsigned_int;
 }
+
+macro_rule! impl_vec_max! {
+    ($fun:ident ($a:ty, $b:ty) => $r:ty) => {
+        impl VectorMax<$b> for $a {
+            type Result = $r;
+            #[inline]
+            #[target_feature(enable = "altivec")]
+            unsafe fn vec_max(self, b: $b) -> Self::Result {
+                $fun(transmute(self), trasmute(b))
+            }
+        }
+    }
+}
+
 
 mod sealed {
     use super::*;
+
+    pub trait VectorMax<Other> {
+        type Result;
+        unsafe fn vec_max(self, b: Other) -> Self::Result;
+    }
+
 
     #[inline]
     #[target_feature(enable = "altivec")]
