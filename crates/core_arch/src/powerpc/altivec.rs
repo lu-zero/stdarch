@@ -198,7 +198,7 @@ mod sealed {
             #[target_feature(enable = "altivec")]
             #[cfg_attr(test, assert_instr($instr))]
             unsafe fn $fun ($($v : $ty),*) -> $r {
-                $call ($($v),*)
+                transmute($call ($($v),*))
             }
         }
     }
