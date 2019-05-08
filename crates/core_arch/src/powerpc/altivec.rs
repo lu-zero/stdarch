@@ -231,7 +231,8 @@ mod sealed {
 
     macro_rules! splats {
         ($name:ident, $v:ident, $r:ident) => {
-            #[inline(always)]
+            #[inline]
+            #[target_feature(enable = "altivec")]
             unsafe fn $name(v: $v) -> s_t_l!($r) {
                 transmute($r::splat(v))
             }
