@@ -16,7 +16,7 @@ macro_rules! simd_ty {
                 $id($($elem_name),*)
             }
 
-            #[inline]
+            #[inline(always)]
             pub(crate) const fn splat(value: $ety) -> Self {
                 $id($({
                     #[allow(non_camel_case_types, dead_code)]
@@ -25,7 +25,7 @@ macro_rules! simd_ty {
                 }),*)
             }
 
-            #[inline]
+            #[inline(always)]
             pub(crate) fn extract(self, index: usize) -> $ety {
                 unsafe {
                     crate::core_arch::simd_llvm::simd_extract(self, index as u32)
@@ -53,7 +53,7 @@ macro_rules! simd_m_ty {
                 $id($(Self::bool_to_internal($elem_name)),*)
             }
 
-            #[inline]
+            #[inline(always)]
             pub(crate) const fn splat(value: bool) -> Self {
                 $id($({
                     #[allow(non_camel_case_types, dead_code)]
@@ -62,7 +62,7 @@ macro_rules! simd_m_ty {
                 }),*)
             }
 
-            #[inline]
+            #[inline(always)]
             pub(crate) fn extract(self, index: usize) -> bool {
                 let r: $ety = unsafe {
                     crate::core_arch::simd_llvm::simd_extract(self, index as u32)
