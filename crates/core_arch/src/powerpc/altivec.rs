@@ -163,6 +163,32 @@ extern "C" {
     fn vminuw(a: vector_unsigned_int, b: vector_unsigned_int) -> vector_unsigned_int;
 }
 
+macro_rules! s_t_l {
+    (i32x4) => {
+        vector_signed_int
+    };
+    (i16x8) => {
+        vector_signed_short
+    };
+    (i8x16) => {
+        vector_signed_char
+    };
+
+    (u32x4) => {
+        vector_unsigned_int
+    };
+    (u16x8) => {
+        vector_unsigned_short
+    };
+    (u8x16) => {
+        vector_unsigned_char
+    };
+
+    (f32x4) => {
+        vector_float
+    };
+}
+
 mod sealed {
     use super::*;
 
@@ -202,6 +228,23 @@ mod sealed {
             impl_vec_trait!{ [$Trait $m] $sw (vector_signed_int, ~vector_bool_int) -> vector_signed_int }
         }
     }
+
+    macro_rules! splats {
+        ($name:ident, $v:ident, $r:ident) => {
+            #[inline(always)]
+            unsafe fn $name(v: $v) -> s_t_l!($r) {
+                transmute($r::splat(v))
+            }
+        }
+    }
+
+    splats!{ splats_u8, u8, u8x16 }
+    splats!{ splats_u16, u16, u16x8 }
+    splats!{ splats_u32, u32, u32x4 }
+
+    test_impl! { vec_splats_u8 (v: u8) -> vector_unsigned_char [splats_u8, vspltb] }
+    test_impl! { vec_splats_u16 (v: u16) -> vector_unsigned_short [splats_u16, vsplth] }
+    test_impl! { vec_splats_u32 (v: u32) -> vector_unsigned_int [splats_u32, vspltw] }
 
     test_impl! { vec_vsububm (a: vector_unsigned_char, b: vector_unsigned_char) -> vector_unsigned_char [simd_sub, vsububm] }
     test_impl! { vec_vsubuhm (a: vector_unsigned_short, b: vector_unsigned_short) -> vector_unsigned_short [simd_sub, vsubuhm] }
@@ -1171,32 +1214,6 @@ mod tests {
 
     use crate::core_arch::simd::*;
     use stdsimd_test::simd_test;
-
-    macro_rules! s_t_l {
-        (i32x4) => {
-            vector_signed_int
-        };
-        (i16x8) => {
-            vector_signed_short
-        };
-        (i8x16) => {
-            vector_signed_char
-        };
-
-        (u32x4) => {
-            vector_unsigned_int
-        };
-        (u16x8) => {
-            vector_unsigned_short
-        };
-        (u8x16) => {
-            vector_unsigned_char
-        };
-
-        (f32x4) => {
-            vector_float
-        };
-    }
 
     macro_rules! test_vec_sub {
         { $name: ident, $ty: ident, [$($a:expr),+], [$($b:expr),+], [$($d:expr),+] } => {
