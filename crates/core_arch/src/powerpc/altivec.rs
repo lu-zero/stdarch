@@ -236,6 +236,11 @@ extern "C" {
     fn vcmpgtsh(a: vector_signed_short, b: vector_signed_short) -> vector_bool_short;
     #[link_name = "llvm.ppc.altivec.vcmpgtsw"]
     fn vcmpgtsw(a: vector_signed_int, b: vector_signed_int) -> vector_bool_int;
+
+    #[link_name = "llvm.ppc.altivec.vcfux"]
+    fn vcfux(a: vector_unsigned_int, b: i32) -> vector_float;
+    #[link_name = "llvm.ppc.altivec.vcfsx"]
+    fn vcfsx(a: vector_signed_int, b: i32) -> vector_float;
 }
 
 macro_rules! s_t_l {
@@ -320,8 +325,16 @@ mod sealed {
             pub unsafe fn $fun ($($v : $ty),*) -> $r {
                 $call ($($v),*)
             }
+        };
+        ($fun:ident ($($v:ident : $ty:ty),*) -> $r:ty [$call:ident, $instr:ident] [const $n:expr, $id:ident = $val:expr ]) => {
+            #[inline]
+            #[target_feature(enable = "altivec")]
+            #[cfg_attr(test, assert_instr($instr, $id = $val))]
+            #[rustc_args_required_const($n)]
+            pub unsafe fn $fun ($($v : $ty),*) -> $r {
+                $call ($($v),*)
+            }
         }
-
     }
 
     macro_rules! impl_vec_trait {
@@ -403,6 +416,35 @@ mod sealed {
             impl_vec_trait!{ [$Trait $m] $sh (vector_signed_short, vector_signed_short) -> vector_bool_short }
             impl_vec_trait!{ [$Trait $m] $uw (vector_unsigned_int, vector_unsigned_int) -> vector_bool_int }
             impl_vec_trait!{ [$Trait $m] $sw (vector_signed_int, vector_signed_int) -> vector_bool_int }
+        }
+    }
+
+    test_impl! { vec_vcfux(a: vector_unsigned_int, b: i32) -> vector_float [ vcfux, vcfux ] [const 1, b = 1 ] }
+    test_impl! { vec_vcfsx(a: vector_signed_int, b: i32) -> vector_float [ vcfsx, vcfsx ] [const 1, b = 1 ] }
+
+    pub trait VectorCtf {
+        type Result;
+        #[rustc_args_required_const(1)]
+        unsafe fn vec_ctf(self, b: i32) -> Self::Result;
+    }
+
+    impl VectorCtf for vector_unsigned_int {
+        type Result = vector_float;
+        #[inline]
+        #[target_feature(enable = "altivec")]
+        #[rustc_args_required_const(1)]
+        unsafe fn vec_ctf(self, b: i32) -> Self::Result {
+            vec_vcfux(self, b)
+        }
+    }
+
+    impl VectorCtf for vector_signed_int {
+        type Result = vector_float;
+        #[inline]
+        #[target_feature(enable = "altivec")]
+        #[rustc_args_required_const(1)]
+        unsafe fn vec_ctf(self, b: i32) -> Self::Result {
+            vec_vcfsx(self, b)
         }
     }
 
